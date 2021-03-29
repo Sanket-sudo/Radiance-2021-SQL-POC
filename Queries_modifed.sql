@@ -1,3 +1,127 @@
+/*============================================================================================================*/
+/*DDL Queries*/
+/*============================================================================================================*/
+
+/*Create tblUser*/
+CREATE TABLE tblUser (
+	UserID UNIQUEIDENTIFIER PRIMARY KEY,
+	Name VARCHAR(60) NOT NULL,
+	Phone VARCHAR(10) NOT NULL UNIQUE,
+	Password VARCHAR(100) NOT NULL
+)
+
+/*Create tblAddress*/
+CREATE TABLE tblAddress(
+	AddressID UNIQUEIDENTIFIER PRIMARY KEY,
+	UserID UNIQUEIDENTIFIER NOT NULL,
+	Name VARCHAR(100) NOT NULL,
+	Phone VARCHAR(10) NOT NULL UNIQUE,
+	Pincode VARCHAR(10) NOT NULL,
+	Address VARCHAR(200) NOT NULL,
+	City VARCHAR(70) NOT NULL,
+	State VARCHAR(70) NOT NULL
+)
+
+ALTER TABLE tblAddress
+ADD CONSTRAINT FK_tblAddress_tblUser FOREIGN KEY (UserID)
+REFERENCES tblUser(UserID)
+
+/*Create tblCategory*/
+CREATE TABLE tblCategory (
+	CategoryID UNIQUEIDENTIFIER PRIMARY KEY,
+	CategoryName VARCHAR(100) NOT NULL,
+	IsActive BIT DEFAULT 'TRUE'
+)
+
+/*Create tblBrand*/
+CREATE TABLE tblBrand (
+	BrandID UNIQUEIDENTIFIER PRIMARY KEY,
+	Name VARCHAR(100) NOT NULL,
+	CategoryID UNIQUEIDENTIFIER NOT NULL,
+	IsActive BIT DEFAULT 'TRUE'
+)
+
+ALTER TABLE tblBrand
+ADD CONSTRAINT FK_tblBrand_tblCategory FOREIGN KEY (CategoryID)
+REFERENCES tblCategory(CategoryID)
+
+
+/*Create tblProduct*/
+CREATE TABLE tblProduct (
+	ProductID UNIQUEIDENTIFIER PRIMARY KEY,
+	Name VARCHAR(100) NOT NULL,
+	Image VARCHAR(100) NOT NULL,
+	Stock INT NOT NULL DEFAULT 0,
+	Price DECIMAL(11,4) NOT NULL,
+	BrandID UNIQUEIDENTIFIER NOT NULL,
+	CategoryID UNIQUEIDENTIFIER NOT NULL,
+	IsActive BIT DEFAULT 'TRUE'
+)
+
+ALTER TABLE tblProduct
+ADD CONSTRAINT FK_tblProduct_tblCategory FOREIGN KEY (CategoryID)
+REFERENCES tblCategory(CategoryID)
+
+ALTER TABLE tblProduct
+ADD CONSTRAINT FK_tblProduct_tblBrand FOREIGN KEY (BrandID)
+REFERENCES tblBrand(BrandID)
+
+
+/*Create tblCart*/
+CREATE TABLE tblCart (
+	UserID UNIQUEIDENTIFIER NOT NULL,
+	ProduuctID UNIQUEIDENTIFIER NOT NULL,
+	Quantity INT NOT NULL
+)
+
+
+ALTER TABLE tblCart
+ADD CONSTRAINT FK_tblCart_tblUser FOREIGN KEY (UserID)
+REFERENCES tblUser(UserID)
+
+ALTER TABLE tblCart
+ADD CONSTRAINT FK_tblCart_tblProduct FOREIGN KEY (ProductID)
+REFERENCES tblProduct(ProductID)
+
+
+/*Create tblOrder*/
+CREATE TABLE tblOrder (
+	OrderID UNIQUEIDENTIFIER PRIMARY KEY,
+	ProductID UNIQUEIDENTIFIER NOT NULL,
+	Quantity INT NOT NULL
+)
+
+ALTER TABLE tblOrder
+ADD CONSTRAINT FK_tblOrder_tblProduct FOREIGN KEY (ProductID)
+REFERENCES tblProduct(ProductID)
+
+
+
+/*Create tblOrderMap*/
+CREATE TABLE tblOrderMap (
+	OrderID UNIQUEIDENTIFIER NOT NULL,
+	UserID UNIQUEIDENTIFIER NOT NULL,
+	AddressID UNIQUEIDENTIFIER NOT NULL
+)
+
+ALTER TABLE tblOrderMap
+ADD CONSTRAINT FK_tblOrderMap_tblOrder FOREIGN KEY (OrderID)
+REFERENCES tblOrder(OrderID)
+
+ALTER TABLE tblOrderMap
+ADD CONSTRAINT FK_tblOrderMap_tblUser FOREIGN KEY (UserID)
+REFERENCES tblUser(UserID)
+
+ALTER TABLE tblOrderMap
+ADD CONSTRAINT FK_tblOrderMap_tblAddress FOREIGN KEY (AddressID)
+REFERENCES tblAddress(AddressID)
+
+
+
+/*============================================================================================================*/
+/*DML Queries*/
+/*============================================================================================================*/
+
 /*User Signup*/
 INSERT INTO
 	tblUser (UserID, Name, Phone, Password)
